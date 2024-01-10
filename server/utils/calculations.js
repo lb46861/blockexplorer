@@ -20,7 +20,7 @@ export const generateVInData = (rawTx) => {
     return {
       txId: vin.txid,
       value: vin.prevout?.value || 0,
-      address: vin.prevout?.scriptPubKey?.address || 'from Block Reward'
+      address: vin.prevout?.scriptPubKey?.address || 'From Block Reward'
     };
   });
   return vIns;

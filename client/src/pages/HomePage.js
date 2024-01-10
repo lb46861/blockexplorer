@@ -10,7 +10,7 @@ const HomePage = () => {
 
   const fetchLatestBlocks = async () => {
     try {
-      const blockData = await axios.get(`/block/lastfiveblocks`);
+      const blockData = await axios.get(`/block/lastTenBlocks`);
       setBlockData(blockData.data);
       setLoading(false);
     } catch (error) {

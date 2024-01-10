@@ -20,7 +20,7 @@ router
   .get(blockController.getLatestBlock);
 
 router
-  .route('/lastfiveblocks')
-  .get(blockController.getLastFiveBlocks);
+  .route('/lastTenBlocks')
+  .get(blockController.getLastTenBlocks);
 
 export default router;

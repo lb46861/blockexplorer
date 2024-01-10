@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { Spinner, Container } from 'react-bootstrap';
+import { Spinner, Container, Pagination } from 'react-bootstrap';
 import TransactionIO from '../components/TransactionData';
 
 const BlockDetails = () => {
@@ -9,26 +9,32 @@ const BlockDetails = () => {
 
   const [blockData, setBlockData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
 
-  const fetchBlockData = async () => {
+  const fetchBlockData = async (pageNumber) => {
+    setLoading(true);
     try {
       const blockData =
         block.length === 64
-          ? await axios.get(`/block/hash/${block}`)
-          : await axios.get(`/block/height/${Math.abs(block)}`);
+          ? await axios.get(`/block/hash/${block}?page=${pageNumber}`)
+          : await axios.get(`/block/height/${Math.abs(block)}?page=${pageNumber}`);
 
       if (blockData?.data) setBlockData(blockData.data);
-      setLoading(false);
     } catch (error) {
-      setLoading(false);
       console.error(error);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
-    fetchBlockData();
+    setPage(1);
+    fetchBlockData(1);
   }, [block]);
-  console.log(blockData);
+
+  const handlePageChange = (pageNumber) => {
+    setPage(pageNumber);
+    fetchBlockData(pageNumber);
+  };
 
   return (
     <Container className="my-5">
@@ -50,17 +56,48 @@ const BlockDetails = () => {
             <strong>Time:</strong> {new Date(blockData.block.time * 1000).toLocaleString()}
           </p>
           <p>
-            <strong>Transactions Number:</strong>
-            {blockData.block.nTx}
+            <strong>Transactions Number:</strong> {blockData.block.nTx}
           </p>
 
           <h2>Transactions</h2>
+          <Pagination className="mt-5">
+            <Pagination.Prev onClick={() => handlePageChange(page - 1)} disabled={page === 1} />
+            {[...Array(blockData.totalPages).keys()].map((value, index) => (
+              <Pagination.Item
+                key={index}
+                active={index + 1 === page}
+                onClick={() => handlePageChange(index + 1)}>
+                {index + 1}
+              </Pagination.Item>
+            ))}
+            <Pagination.Next
+              onClick={() => handlePageChange(page + 1)}
+              disabled={page === blockData.totalPages}
+            />
+          </Pagination>
           {blockData.txList.map((transactionData, index) => (
-            <div key={index} className="my-5">
-              <h3>Transaction {index + 1}</h3>
+            <div key={index} className="mb-5">
+              <h3>Transaction {index + 1 + (page - 1) * 10}</h3>
+
               <TransactionIO transactionData={transactionData} />
             </div>
           ))}
+
+          <Pagination>
+            <Pagination.Prev onClick={() => handlePageChange(page - 1)} disabled={page === 1} />
+            {[...Array(blockData.totalPages).keys()].map((value, index) => (
+              <Pagination.Item
+                key={index}
+                active={index + 1 === page}
+                onClick={() => handlePageChange(index + 1)}>
+                {index + 1}
+              </Pagination.Item>
+            ))}
+            <Pagination.Next
+              onClick={() => handlePageChange(page + 1)}
+              disabled={page === blockData.totalPages}
+            />
+          </Pagination>
         </>
       ) : (
         <h2>Invalid block, enter valid block height or hash</h2>

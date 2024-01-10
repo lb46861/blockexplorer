@@ -41,7 +41,7 @@ const Header = () => {
               <Form className="d-flex align-items-center" onSubmit={handleSubmit}>
                 <FormControl
                   type="search"
-                  placeholder="Enter transaction, address, or block"
+                  placeholder="Enter txId, block height or block hash"
                   className="mx-3 search-input"
                   aria-label="Search"
                   value={search}
