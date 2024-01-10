@@ -11,3 +11,44 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content {
+  flex-grow: 1;
+}
+
+.search-input {
+  width: 400px;
+  height: 40px; 
+}
+
+.search-button {
+  padding: 5px 15px; 
+}
+
+
+.custom-link {
+  color: #fff;
+  text-decoration: none; 
+  font-size: 1.5em; 
+  font-weight: bold; 
+}
+
+.custom-link:hover {
+  color: #ddd; 
+}
+
+
+.block-data-table th {
+  color: rgb(220, 115, 115);
+}
+
+.block-data-table td {
+  color: #aaa;
+}
+
