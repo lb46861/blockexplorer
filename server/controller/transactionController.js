@@ -1,33 +1,20 @@
 import asyncHandler from 'express-async-handler';
-
-const calculateTransactionFee = (bitcoinClient, rawTx) => {
-  try {
-    let sumInput = 0;
-    let sumOutput = 0;
-
-    for (const output of rawTx.vout) {
-      sumOutput += output.value;
-    }
-
-    for (const inp of rawTx.vin) {
-      sumInput += inp.prevout.value;
-    }
-
-    const fee = sumInput - sumOutput;
-    return fee;
-  } catch (error) {
-    throw new Error(error.message);
-  }
-};
+import { calculateTransactionFee } from '../utils/calculations.js';
+import { retrieveTransactionData } from '../service/transactionService.js';
 
 export const getTransactionByTxId = asyncHandler(async (req, res) => {
   try {
     const bitcoinClient = req.bitcoinClient;
     const { txId } = req.params;
+
     const rawTx = await bitcoinClient.getRawTransaction(txId, 2);
-    const fee = calculateTransactionFee(bitcoinClient, rawTx);
+    const block = await bitcoinClient.getBlock(rawTx.blockhash);
+
+    const data = retrieveTransactionData(rawTx);
+    data.blockHeight = block.height;
+
     res.json({
-      rawTx, fee
+      data
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -39,8 +26,9 @@ export const getTransactionFee = asyncHandler(async (req, res) => {
     const bitcoinClient = req.bitcoinClient;
     const { txId } = req.params;
     const rawTx = await bitcoinClient.getRawTransaction(txId, 2);
-    const fee = calculateTransactionFee(bitcoinClient, rawTx);
-    res.json({ fee });
+    const [fee, sumOutput] = calculateTransactionFee(rawTx);
+
+    res.json({ fee, sumOutput });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
