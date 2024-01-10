@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Table, Spinner, Container } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
   const [blockData, setBlockData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const fetchLatestBlocks = async () => {
     try {
@@ -44,7 +46,10 @@ const HomePage = () => {
             </thead>
             <tbody>
               {blockData.map((block, index) => (
-                <tr key={index}>
+                <tr
+                  key={index}
+                  onClick={() => navigate(`/block/${block.height}`)}
+                  style={{ cursor: 'pointer' }}>
                   <td>{block.height}</td>
                   <td>{block.confirmations}</td>
                   <td>{new Date(block.age).toLocaleString()}</td>
