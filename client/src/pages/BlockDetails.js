@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Spinner, Container, Pagination } from 'react-bootstrap';
 import TransactionIO from '../components/TransactionData';
 
@@ -29,6 +29,7 @@ const BlockDetails = () => {
   useEffect(() => {
     setPage(1);
     fetchBlockData(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [block]);
 
   const handlePageChange = (pageNumber) => {
@@ -58,9 +59,25 @@ const BlockDetails = () => {
           <p>
             <strong>Transactions Number:</strong> {blockData.block.nTx}
           </p>
+          {blockData.block?.previousblockhash && (
+            <p>
+              <strong>Previous Block Hash:</strong>{' '}
+              <Link to={`/block/${blockData.block.previousblockhash}`}>
+                {blockData.block.previousblockhash}
+              </Link>
+            </p>
+          )}
+          {blockData.block?.nextblockhash && (
+            <p>
+              <strong>Next Block Hash:</strong>{' '}
+              <Link to={`/block/${blockData.block.nextblockhash}`}>
+                {blockData.block.nextblockhash}
+              </Link>
+            </p>
+          )}
 
           <h2>Transactions</h2>
-          <Pagination className="mt-5">
+          <Pagination className="justify-content-center mt-5">
             <Pagination.Prev onClick={() => handlePageChange(page - 1)} disabled={page === 1} />
             {[...Array(blockData.totalPages).keys()].map((value, index) => (
               <Pagination.Item
@@ -83,7 +100,7 @@ const BlockDetails = () => {
             </div>
           ))}
 
-          <Pagination>
+          <Pagination className="justify-content-center mt-5">
             <Pagination.Prev onClick={() => handlePageChange(page - 1)} disabled={page === 1} />
             {[...Array(blockData.totalPages).keys()].map((value, index) => (
               <Pagination.Item
